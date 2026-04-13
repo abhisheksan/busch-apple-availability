@@ -115,9 +115,10 @@ def send_ntfy(stores):
     """Send a push notification listing the stores found."""
     store_lines = []
     for store in sorted(stores, key=lambda s: s.get("distance", 99)):
+        dist = store.get("distance")
+        dist_str = f"{dist:.1f} mi" if dist is not None else "? mi"
         store_lines.append(
-            f"• {store['name']} — {store['address']}, {store['city']} "
-            f"({store.get('distance', '?'):.1f} mi)"
+            f"- {store['name']}, {store['address']}, {store['city']} ({dist_str})"
         )
 
     body = f"{len(stores)} store(s) have Busch Light Apple in NJ!\n\n" + "\n".join(store_lines)
@@ -126,9 +127,10 @@ def send_ntfy(stores):
             f"https://ntfy.sh/{NTFY_TOPIC}",
             data=body.encode("utf-8"),
             headers={
-                "Title": "🍎 Busch Light Apple found in NJ!",
+                "Title": "Busch Light Apple found in NJ!",
                 "Priority": "high",
                 "Tags": "beer,tada",
+                "Content-Type": "text/plain; charset=utf-8",
             },
             timeout=10,
         )
